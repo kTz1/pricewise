@@ -1,8 +1,44 @@
 "use client"
 
-export const Searchbar = () => {
-  const handleSubmit = () => {}
+import { FormEvent, useState } from "react"
 
+const isValidAmazonProductURL = (url: string) => {
+  try {
+    const parsedURL = new URL(url);
+    const hostname = parsedURL.hostname;
+
+    // Check if the hostname contains amazon.com or amzon. 
+    if (hostname.includes('amazon.com') || hostname.includes('amazon.') || hostname.includes('amazon.')) {
+      return true;
+    } 
+  } catch (error) {
+    return false;
+  }
+  return false;
+}
+
+const Searchbar = () => {
+  const [searchPrompt, setSearchPrompt] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const isValidLink = isValidAmazonProductURL(searchPrompt);
+
+    if (!isValidLink) return alert('Please provide a valid Amazon link.');
+
+    try {
+      setIsLoading(true);
+
+      // Scrape the product data from the link.
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  
   return (
     <form 
       className="flex flex-wrap gap-4 mt-12"
@@ -10,13 +46,21 @@ export const Searchbar = () => {
     >
       <input 
         type="text" 
+        value={searchPrompt}
+        onChange={(e) => setSearchPrompt(e.target.value)}
         placeholder="Enter product link"
         className="searchbar-input"
       />
 
-      <button type="submit" className="searchbar-btn">
-        Search
+      <button 
+        type="submit" 
+        className="searchbar-btn"
+        disabled={searchPrompt === ''}
+        >
+        {isLoading ? 'Searching...' : 'Search'}
       </button>
     </form>
   )
 }
+
+export default Searchbar
