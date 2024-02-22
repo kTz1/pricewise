@@ -38,7 +38,6 @@ export async function GET() {
         const updatedProduct = await Product.findOneAndUpdate(
           { url: product.url },
           product,
-          { upsert: true, new: true }
         );
 
         // 2. Check each product's status & send email accordingly
