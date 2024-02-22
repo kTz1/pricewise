@@ -9,7 +9,7 @@ export const maxDuration = 5; // 5 minutes
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     connectToDB();
 
@@ -25,7 +25,7 @@ export async function GET() {
 
         const updatedPriceHistory = [
               ...currentProduct.priceHistory,
-              { price: scrapedProduct.currentPrice }
+              { price: scrapedProduct.currentPrice },
             ]
         const product = {
           ...scrapedProduct,
@@ -34,7 +34,7 @@ export async function GET() {
           highestPrice: getHighestPrice(updatedPriceHistory),
           averagePrice: getAveragePrice(updatedPriceHistory)
         }
-
+        // update products in DB
         const updatedProduct = await Product.findOneAndUpdate(
           { url: product.url },
           product,
@@ -50,8 +50,9 @@ export async function GET() {
           }
           // construct email content
           const emailContent = await generateEmailBody(productInfo, emailNotifType);
-          // send email
+          // get array of user emails
           const userEmails = updatedProduct.users.map((user: any) => user.email);
+          // send email
           await sendEmail(emailContent, userEmails);
         }
 
@@ -61,7 +62,7 @@ export async function GET() {
 
     return NextResponse.json({
       message: 'Ok',
-      data: updatedProducts
+      data: updatedProducts,
     })
   } catch (error) {
     throw new Error(`Error in GET : ${error}`);

@@ -22,16 +22,16 @@ export async function scrapeAndStoreProduct(productUrl: string) {
 
     // Update the product price history if the product already exists
     if(existingProduct) {
-      const updatePriceHistory: any = [
+      const updatedPriceHistory: any = [
         ...existingProduct.priceHistory,
         { price: scrapedProduct.currentPrice }
       ]
       product = {
         ...scrapedProduct,
-        priceHistory: updatePriceHistory,
-        lowestPrice: getLowestPrice(updatePriceHistory),
-        highestPrice: getHighestPrice(updatePriceHistory),
-        averagePrice: getAveragePrice(updatePriceHistory)
+        priceHistory: updatedPriceHistory,
+        lowestPrice: getLowestPrice(updatedPriceHistory),
+        highestPrice: getHighestPrice(updatedPriceHistory),
+        averagePrice: getAveragePrice(updatedPriceHistory)
       }
     }
     // Update the product, create a new product if it doesn't exist
